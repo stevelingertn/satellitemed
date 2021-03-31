@@ -29,7 +29,17 @@
                             <div wire:ignore>
                                 <textarea class="body" name="body" wire:model.lazy="body"></textarea>
                                 <script>
+
                                     var editor_config = {
+                                        setup: function (editor) {
+                                            editor.on('init change', function () {
+                                                editor.save();
+                                            });
+                                            editor.on('change', function (e) {
+                                            @this.set('body', editor.getContent());
+                                            });
+                                        },
+                                        //inline: true,
                                         path_absolute : "/",
                                         selector: 'textarea.body',
                                         relative_urls: false,
@@ -66,6 +76,7 @@
                                     };
 
                                     tinymce.init(editor_config);
+
                                 </script>
 
 {{--                                <script>--}}

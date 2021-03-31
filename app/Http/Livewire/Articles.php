@@ -138,4 +138,13 @@ class Articles extends Component
         Article::find($id)->delete();
         session()->flash('message', 'Article Deleted Successfully.');
     }
+
+    public function show(Article $article)
+    {
+        //shows a single resource
+
+
+        return view('articles.show', ['article' => $article]);
+
+    }
 }
