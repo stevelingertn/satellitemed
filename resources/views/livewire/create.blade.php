@@ -26,8 +26,8 @@
                         </div>
                         <div class="mb-4">
                             <label for="body" class="block text-gray-700 text-sm font-bold mb-2">Body:</label>
-                            <div wire:ignore>
-                                <textarea class="body" name="body" wire:model.lazy="body"></textarea>
+                            <div wire:ignore class="">
+                                <textarea class="body min-h-screen" name="body" wire:model.lazy="body"></textarea>
                                 <script>
 
                                     var editor_config = {

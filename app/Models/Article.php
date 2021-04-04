@@ -19,9 +19,16 @@ class Article extends Model
     }
 
 
-    protected $fillable = ['title','slug','author','body','addedBy'];
+    protected $fillable = ['title','slug','author','thumbnail','body','addedBy'];
 
+    public function path(){
+        return route('article.show', $this);
+    }
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
 
 }

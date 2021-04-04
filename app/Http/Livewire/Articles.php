@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use Cviebrock\EloquentSluggable\Services\SlugService;
+use DOMDocument;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\View\Factory;
@@ -26,9 +27,26 @@ class Articles extends Component
     public function render()
     {
         $this->articles = Article::all();
-        return view('livewire.articles')
-            ->extends('layouts.app')
+        $user = \Auth::user();
+        return view('livewire.manageArticles', [ 'user' => $user])
+            ->extends('layouts.app-nofooter')
             ->section('content');
+
+
+
+    }
+
+    public function manage() {
+        $articles = Article::latest()->paginate(10);
+        return view('livewire.manageArticles', ['articles' => $articles]);
+
+    }
+
+    public function index()
+    {
+            $articles = Article::latest()->paginate(10);
+            //dd($articles);
+            return view('livewire.index', ['articles' => $articles]);
     }
 
     public function updatedTitle()
@@ -90,16 +108,27 @@ class Articles extends Component
     {
         $this->validate([
             'title' => 'required',
-
             'author' => 'required',
         ]);
+        /* This section searches the body of the article.
+            If the body contains an image, it stores the path
+            of the thumbnail in the DB so it doesn't have to parse
+            every article on the index views */
+        $doc = new DOMDocument();
+        @$doc->loadHTML($this->body);
+        $images = $doc->getElementsByTagName('img');
 
+        foreach ($images as $image) {
+            $originalSource = $image->getAttribute('src');
+        }
+        $thumbnail = str_replace('/storage/photos/1/', '/storage/photos/1/thumbs/',$originalSource);
 
         Article::updateOrCreate(
             ['id' => $this->article_id],
             ['title' => $this->title,
                 'body' => $this->body,
                 'slug' => $this->slug,
+                'thumbnail' => $thumbnail,
                 'author' => $this->author,
                 'addedBy' => auth()->user()->name
             ]);
@@ -137,14 +166,5 @@ class Articles extends Component
     {
         Article::find($id)->delete();
         session()->flash('message', 'Article Deleted Successfully.');
-    }
-
-    public function show(Article $article)
-    {
-        //shows a single resource
-
-
-        return view('articles.show', ['article' => $article]);
-
     }
 }
